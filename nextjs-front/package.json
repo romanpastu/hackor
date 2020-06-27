@@ -1,0 +1,29 @@
+{
+  "name": "hackor",
+  "version": "1.0.0",
+  "description": "MERN Stack (Next.js + React) webapp",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/romanpastu/hackor.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/romanpastu/hackor/issues"
+  },
+  "homepage": "https://github.com/romanpastu/hackor#readme",
+  "dependencies": {
+    "@zeit/next-css": "^1.0.1",
+    "next": "^9.4.4",
+    "nprogress": "^0.2.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  }
+}
