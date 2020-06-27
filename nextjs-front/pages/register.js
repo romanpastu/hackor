@@ -20,7 +20,7 @@ const Register = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.table({name, email, password})
+        console.table({ name, email, password })
     }
 
     const registerForm = () => {
