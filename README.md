@@ -1,2 +1,2 @@
 # hackor
-MERN Stack (Next.js + React + Node) webapp
+MERN Stack (Next.js + React + Node + Express + MongoDB) webapp
