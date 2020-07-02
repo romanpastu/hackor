@@ -1,6 +1,7 @@
 const User = require('../models/user')
 const AWS = require('aws-sdk')
 const jwt = require('jsonwebtoken')
+const {registerEmailParams} = require('../helpers/email')
 
 AWS.config.update({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -17,7 +18,7 @@ exports.register = (req, res) => {
     User.findOne({ email: email }).exec((err, user) => {
         if (user) {
             console.log(err)
-            return res.stats(400).json({
+            return res.status(400).json({
                 error: 'Email is taken'
             })
         }
@@ -27,39 +28,22 @@ exports.register = (req, res) => {
             expiresIn: '10m'
         })
 
-        const params = {
-            Source: process.env.EMAIL_FROM,
-            Destination: {
-                ToAddresses: [email]
-            },
-            ReplyToAddresses: [process.env.EMAIL_TO],
-            Message: {
-                Body: {
-                    Html: {
-                        Charset: 'UTF-8',
-                        Data: `
-                        <html>
-                            <h1>Verify your email address</h1>
-                            <p>Please use the following link to complete your registration: </p>
-                            <p>${process.env.CLIENT_URL}/auth/activate/${token}</p>
-                        </html>`
-                    }
-                },
-                Subject: {
-                    Charset: 'UTF-8',
-                    Data: 'Complete your registration'
-                }
-            }
-        }
+        const params = registerEmailParams(email, token)
+        
         const sendEmailOnRegister = ses.sendEmail(params).promise();
+
         sendEmailOnRegister
             .then(data => {
                 console.log('email submitted to SES', data)
-                res.send('Email sent')
+                res.json({
+                    message: `Email has been sent to ${email}, Follow the instructions to complete your registstartion`
+                })
             })
             .catch(err => {
                 console.log('ses email on register', err)
-                res.send('email failed')
+                res.json({
+                    message: `We could not verify your email. Please try again`
+                })
             })
     })
 
