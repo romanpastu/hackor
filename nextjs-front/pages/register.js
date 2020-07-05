@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Layout from '../components/Layout'
 import axios from 'axios'
 import { showSuccessMessage, showErrorMessage } from '../helpers/alerts'
-
+import {API} from '../config'
 const Register = () => {
 
     const [state, setState] = useState({
@@ -20,15 +20,15 @@ const Register = () => {
         setState({ ...state, [name]: e.target.value, error: '', success: '', buttonText: 'Register' })
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) =>{
         e.preventDefault();
         setState({ ...state, buttonText: 'Registering' })
-        console.table({ name, email, password })
-        axios.post(`http://localhost:8000/api/register`, {
-            name,
-            email,
-            password
-        }).then(res => {
+        try{
+            const res = await axios.post(`${API}/register`, {
+                name,
+                email,
+                password
+            })
             setState({
                 ...state,
                 name: '',
@@ -37,22 +37,23 @@ const Register = () => {
                 buttonText: 'Submitted',
                 success: res.data.message
             })
-        }).catch(error => {
+        }catch(err){
             setState({ ...state, buttonText: 'Register', error: error.response.data.error })
-        })
+        }
     }
+
 
     const registerForm = () => {
         return (
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                    <input value={name} onChange={handleChange('name')} type="text" className="form-control" placeholder="Type your name" />
+                    <input value={name} onChange={handleChange('name')} type="text" className="form-control" placeholder="Type your name" required/>
                 </div>
                 <div className="form-group">
-                    <input value={email} onChange={handleChange('email')} type="email" className="form-control" placeholder="Type your email" />
+                    <input value={email} onChange={handleChange('email')} type="email" className="form-control" placeholder="Type your email" required/>
                 </div>
                 <div className="form-group">
-                    <input value={password} onChange={handleChange('password')} type="password" className="form-control" placeholder="Type your password" />
+                    <input value={password} onChange={handleChange('password')} type="password" className="form-control" placeholder="Type your password" required/>
                 </div>
                 <div className="form-group">
                     <button className="btn btn-outline-warning">{buttonText}</button>
