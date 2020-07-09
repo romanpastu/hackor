@@ -5,6 +5,7 @@ import Router from 'next/router'
 import axios from 'axios'
 import { showSuccessMessage, showErrorMessage } from '../helpers/alerts'
 import {API} from '../config'
+import {authenticate, isAuth} from '../helpers/auth'
 
 const Login = () => {
 
@@ -15,6 +16,10 @@ const Login = () => {
         success: '',
         buttonText: 'Login'
     })
+
+    useEffect(() => {
+        isAuth() && Router.push('/')
+    }, [])
 
     const { email, password, error, success, buttonText } = state;
 
@@ -30,9 +35,11 @@ const Login = () => {
                 email,
                 password
             })
-            console.log(res)
+            // console.log(res) //user token
+            authenticate(res, () => {
+               isAuth() && isAuth().role === 'admin' ? Router.push('/admin') : Router.push('/user')
+            })
         }catch(err){
-            console.log(err.response)
             setState({ ...state, buttonText: 'Login', error: err.response.data.error })
         }
     }
