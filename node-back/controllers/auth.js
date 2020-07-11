@@ -1,6 +1,7 @@
 const User = require('../models/user')
 const AWS = require('aws-sdk')
 const jwt = require('jsonwebtoken')
+const expressJwt = require('express-jwt')
 const {registerEmailParams} = require('../helpers/email')
 const shortId = require('shortid')
 
@@ -112,4 +113,39 @@ exports.login = (req,res) => {
             token, user: {_id, name, email, role}
         })
     } )
+}
+
+exports.requireSignin = expressJwt({secret: process.env.JWT_SECRET }) //req.user
+
+exports.authMiddleware = (req, res, next) => {
+    const authUserId = req.user._id
+    User.findOne({ _id: authUserId}).exec((err, user) => {
+        if(err || !user){
+            return res.status(400).json({
+                error: "User not found"
+            })
+        }
+        req.profile = user
+        next()
+    })
+}
+
+exports.adminMiddleware = (req, res, next) => {
+    const adminUserId = req.user._id
+    User.findOne({ _id: adminUserId}).exec((err, user) => {
+        if(err || !user){
+            return res.status(400).json({
+                error: "User not found"
+            })
+        }
+        
+        if(user.role != 'admin'){
+            return res.status(400).json({
+                error: "Admin resource. Access denied"
+            })
+        }
+
+        req.profile = user
+        next()
+    })
 }
